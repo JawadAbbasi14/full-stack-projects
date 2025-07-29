@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search Visualizer</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the Inter font and overall layout */
+        body {
+            font-family: "Inter", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff; /* White background for the main container */
+            border-radius: 16px; /* Rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .array-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            justify-content: center;
+            gap: 8px; /* Space between array elements */
+            margin-top: 20px;
+            min-height: 100px; /* Ensure space even when empty */
+            align-items: flex-start; /* Align items to the top */
+        }
+        .array-element {
+            width: 50px; /* Fixed width for each element */
+            height: 50px; /* Fixed height for each element */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e2e8f0; /* Light gray background for elements */
+            border: 2px solid #cbd5e1; /* Border for elements */
+            border-radius: 8px; /* Rounded corners for elements */
+            font-weight: bold;
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+            position: relative; /* For pointer positioning */
+            flex-shrink: 0; /* Prevent shrinking on smaller screens */
+        }
+        .array-element.current-range {
+            background-color: #bfdbfe; /* Light blue for current search range */
+            border-color: #60a5fa; /* Blue border for current search range */
+        }
+        .array-element.mid {
+            background-color: #a7f3d0; /* Light green for mid element */
+            border-color: #34d399; /* Green border for mid element */
+            transform: scale(1.05); /* Slightly larger for emphasis */
+        }
+        .array-element.found {
+            background-color: #d1fae5; /* Lighter green when found */
+            border-color: #10b981; /* Darker green when found */
+            animation: pulse 1s infinite alternate; /* Pulse animation */
+        }
+        .array-element.not-found {
+            background-color: #fecaca; /* Light red for elements not in path */
+            border-color: #ef4444; /* Red border */
+        }
+        .pointer {
+            position: absolute;
+            bottom: -25px; /* Position below the element */
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #4b5563; /* Dark gray for pointers */
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+        .pointer.low { left: 50%; transform: translateX(-50%); color: #4f46e5; } /* Indigo for low */
+        .pointer.high { left: 50%; transform: translateX(-50%); color: #dc2626; } /* Red for high */
+        .pointer.mid-text { left: 50%; transform: translateX(-50%); color: #059669; } /* Green for mid */
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .controls input[type="number"] {
+            padding: 12px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1em;
+            width: 100%;
+            box-sizing: border-box; /* Include padding in width */
+        }
+        .controls button {
+            padding: 12px 20px;
+            background-color: #4f46e5; /* Indigo button */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); /* Button shadow */
+        }
+        .controls button:hover {
+            background-color: #4338ca; /* Darker indigo on hover */
+            transform: translateY(-2px); /* Slight lift on hover */
+        }
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            text-align: center;
+            min-height: 60px; /* Ensure consistent height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e0f2fe; /* Light blue message background */
+            color: #1e40af; /* Dark blue text */
+            border: 1px solid #93c5fd; /* Blue border */
+        }
+        .message.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border-color: #34d399;
+        }
+        .message.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-color: #fca5a5;
+        }
+
+        /* Keyframe for pulse animation */
+        @keyframes pulse {
+            0% { transform: scale(1.05); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { transform: scale(1.05); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            .array-element {
+                width: 45px;
+                height: 45px;
+                font-size: 0.9em;
+            }
+            .controls input[type="number"],
+            .controls button {
+                font-size: 1em;
+                padding: 10px;
+            }
+            .message {
+                font-size: 1em;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-4">Binary Search Visualizer</h1>
+
+        <div class="controls">
+            <label for="targetInput" class="text-gray-700 text-lg">Enter a number to search:</label>
+            <input type="number" id="targetInput" placeholder="e.g., 38" class="focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            <button id="startButton">Start Binary Search</button>
+        </div>
+
+        <div id="arrayContainer" class="array-container">
+            <!-- Array elements will be rendered here by JavaScript -->
+        </div>
+
+        <div id="message" class="message">
+            Enter a number and click "Start Binary Search" to begin.
+        </div>
+    </div>
+
+    <script>
+        // Define the sorted array for binary search
+        const arr = [2, 5, 8, 12, 16, 23, 38, 56, 72, 91];
+        const arrayContainer = document.getElementById('arrayContainer');
+        const targetInput = document.getElementById('targetInput');
+        const startButton = document.getElementById('startButton');
+        const messageDisplay = document.getElementById('message');
+
+        // Function to render the array elements in the UI
+        function renderArray(low = -1, high = -1, mid = -1, foundIndex = -1) {
+            arrayContainer.innerHTML = ''; // Clear previous elements
+            arr.forEach((value, index) => {
+                const element = document.createElement('div');
+                element.classList.add('array-element');
+                element.textContent = value;
+
+                // Apply styling based on current search state
+                if (foundIndex === index) {
+                    element.classList.add('found');
+                } else if (index >= low && index <= high && low !== -1 && high !== -1) {
+                    element.classList.add('current-range');
+                } else if (foundIndex === -1 && (low !== -1 || high !== -1)) {
+                    // If not found yet, and outside current range, mark as not-found
+                    element.classList.add('not-found');
+                }
+
+                // Add pointers for low, high, and mid
+                if (index === low && low !== -1) {
+                    const lowPointer = document.createElement('div');
+                    lowPointer.classList.add('pointer', 'low');
+                    lowPointer.textContent = 'Low';
+                    element.appendChild(lowPointer);
+                }
+                if (index === high && high !== -1) {
+                    const highPointer = document.createElement('div');
+                    highPointer.classList.add('pointer', 'high');
+                    highPointer.textContent = 'High';
+                    element.appendChild(highPointer);
+                }
+                if (index === mid && mid !== -1) {
+                    const midPointer = document.createElement('div');
+                    midPointer.classList.add('pointer', 'mid-text');
+                    midPointer.textContent = 'Mid';
+                    element.appendChild(midPointer);
+                    element.classList.add('mid'); // Highlight mid element
+                }
+
+                arrayContainer.appendChild(element);
+            });
+        }
+
+        // Asynchronous binary search function with visualization
+        async function binarySearch(arr, target) {
+            let low = 0;
+            let high = arr.length - 1;
+            let foundIndex = -1;
+
+            messageDisplay.className = 'message'; // Reset message class
+            messageDisplay.textContent = `Searching for ${target}...`;
+
+            // Initial render of the array with low and high pointers
+            renderArray(low, high, -1);
+            await new Promise(resolve => setTimeout(resolve, 1500)); // Pause for visualization
+
+            // Loop while the search space is valid
+            while (low <= high) {
+                const mid = Math.floor((low + high) / 2); // Calculate middle index
+
+                // Render current state: low, high, mid, and current range
+                renderArray(low, high, mid);
+                messageDisplay.textContent = `Current range: [${arr[low]}, ${arr[high]}]. Checking middle element: ${arr[mid]}.`;
+                await new Promise(resolve => setTimeout(resolve, 1500)); // Pause
+
+                // Compare middle element with target
+                if (arr[mid] === target) {
+                    foundIndex = mid;
+                    renderArray(-1, -1, -1, foundIndex); // Render with found element highlighted
+                    messageDisplay.className = 'message success';
+                    messageDisplay.textContent = `Target ${target} found at index ${mid}!`;
+                    return mid; // Target found
+                } else if (arr[mid] < target) {
+                    // If mid is less than target, discard left half
+                    messageDisplay.textContent = `${arr[mid]} is less than ${target}. Shifting search to the right half.`;
+                    low = mid + 1;
+                } else {
+                    // If mid is greater than target, discard right half
+                    messageDisplay.textContent = `${arr[mid]} is greater than ${target}. Shifting search to the left half.`;
+                    high = mid - 1;
+                }
+                await new Promise(resolve => setTimeout(resolve, 1500)); // Pause
+            }
+
+            // If loop finishes, target was not found
+            renderArray(); // Clear all highlights
+            messageDisplay.className = 'message error';
+            messageDisplay.textContent = `Target ${target} not found in the array.`;
+            return -1;
+        }
+
+        // Event listener for the start button
+        startButton.addEventListener('click', () => {
+            const targetValue = parseInt(targetInput.value); // Get target from input
+
+            // Validate input
+            if (isNaN(targetValue)) {
+                messageDisplay.className = 'message error';
+                messageDisplay.textContent = 'Please enter a valid number.';
+                renderArray(); // Reset visualization
+                return;
+            }
+
+            // Disable input and button during search
+            targetInput.disabled = true;
+            startButton.disabled = true;
+
+            // Start the binary search visualization
+            binarySearch(arr, targetValue).finally(() => {
+                // Re-enable input and button after search completes
+                targetInput.disabled = false;
+                startButton.disabled = false;
+            });
+        });
+
+        // Initial render of the array when the page loads
+        window.onload = () => {
+            renderArray();
+        };
+    </script>
+</body>
+</html>
