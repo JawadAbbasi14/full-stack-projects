@@ -1,4 +1,3 @@
-
 # DOM Manipulation - Login Form with Axios
 
 This project demonstrates **basic DOM manipulation** using JavaScript along with **Axios** for making HTTP POST requests.
@@ -48,7 +47,7 @@ DOM Manipulation/
 
 ## 📷 Screenshot
 
-*(Add screenshot here if needed)*
+![Login Form Screenshot](https://github.com/JawadAbbasi14/full-stack-projects/blob/main/algorithms-learning-projects/DOM-manuplation/signup.PNG)
 
 ---
 
