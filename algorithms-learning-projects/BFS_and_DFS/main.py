@@ -1,91 +1,88 @@
-from collections import deque
+# Graph Search Algorithms: BFS and DFS
+# Yeh code ek undirected graph ke liye BFS aur DFS implement karta hai.
+# Graph adjacency list ke form mein hai.
 
-# Graph ko dictionary ke zariye represent karna
-graph = {
-    'A': ['B', 'C'],
-    'B': ['D', 'E'],
-    'C': ['F'],
-    'D': [],
-    'E': ['F'],
-    'F': []
-}
+from collections import defaultdict, deque
+import matplotlib.pyplot as plt
+import networkx as nx
 
-# --- Breadth-First Search (BFS) ---
-def bfs(graph, start_node):
-    """
-    Graph par BFS traversal karta hai.
-    """
-    visited = set()
-    queue = deque([start_node])
-    visited.add(start_node)
+# Graph class banate hain jo adjacency list use karta hai
+class Graph:
+    def __init__(self):
+        # Defaultdict se har node ke liye empty list ban jaati hai
+        self.graph = defaultdict(list)
     
-    print("BFS Traversal Order:")
+    def add_edge(self, u, v):
+        # Undirected graph ke liye dono direction mein edge add karte hain
+        self.graph[u].append(v)
+        self.graph[v].append(u)
     
-    while queue:
-        # Queue ke left se node nikalna (FIFO)
-        current_node = queue.popleft()
-        print(current_node, end=" ")
+    def bfs(self, start):
+        # BFS implementation
+        visited = set()  # Track karega konsa node visit hua
+        queue = deque([start])  # Queue mein start node daal do
+        visited.add(start)  # Start node ko visited mark karo
+        traversal = []  # Yeh store karega traversal order
         
-        # Padosi nodes ko explore karna
-        for neighbor in graph.get(current_node, []):
-            if neighbor not in visited:
-                visited.add(neighbor)
-                queue.append(neighbor)
-    print("\n")
-
-# --- Depth-First Search (DFS) (Iterative) ---
-def dfs_iterative(graph, start_node):
-    """
-    Graph par iterative DFS traversal karta hai.
-    """
-    visited = set()
-    stack = [start_node]
-    
-    print("DFS Traversal (Iterative):")
-    
-    while stack:
-        # Stack ke top se node nikalna (LIFO)
-        current_node = stack.pop()
-        
-        if current_node not in visited:
-            print(current_node, end=" ")
-            visited.add(current_node)
+        while queue:
+            node = queue.popleft()  # Queue se pehla node nikalo
+            traversal.append(node)  # Traversal list mein add karo
             
-            # Padosi nodes ko stack mein dalna
-            # Reverse order mein, taake output consistent ho
-            for neighbor in reversed(graph.get(current_node, [])):
-                stack.append(neighbor)
-    print("\n")
+            # Saare neighbors check karo
+            for neighbor in self.graph[node]:
+                if neighbor not in visited:
+                    queue.append(neighbor)  # Unvisited neighbor ko queue mein daalo
+                    visited.add(neighbor)  # Usay visited mark karo
+        
+        return traversal
+    
+    def dfs(self, start):
+        # DFS implementation
+        visited = set()  # Track karega konsa node visit hua
+        traversal = []  # Yeh store karega traversal order
+        
+        def dfs_recursive(node):
+            # Recursive DFS function
+            visited.add(node)  # Node ko visited mark karo
+            traversal.append(node)  # Traversal list mein add karo
+            
+            # Saare neighbors check karo
+            for neighbor in self.graph[node]:
+                if neighbor not in visited:
+                    dfs_recursive(neighbor)  # Unvisited neighbor ke liye recursive call
+        
+        dfs_recursive(start)  # DFS shuru karo
+        return traversal
+    
+    def visualize(self):
+        # Graph ko visualize karne ke liye networkx use karenge
+        G = nx.Graph()
+        for node in self.graph:
+            for neighbor in self.graph[node]:
+                G.add_edge(node, neighbor)
+        
+        pos = nx.spring_layout(G)  # Layout for visualization
+        plt.figure(figsize=(8, 6))
+        nx.draw(G, pos, with_labels=True, node_color='#5b67f3', 
+                node_size=500, font_color='#333333', edge_color='#ff6b6b')
+        plt.title("Graph Visualization (BFS/DFS)")
+        plt.show()
 
-# --- Depth-First Search (DFS) (Recursive) ---
-def dfs_recursive_helper(graph, node, visited):
-    """
-    Recursive DFS ke liye helper function.
-    """
-    if node not in visited:
-        print(node, end=" ")
-        visited.add(node)
-        for neighbor in graph.get(node, []):
-            dfs_recursive_helper(graph, neighbor, visited)
-
-def dfs_recursive(graph, start_node):
-    """
-    Graph par recursive DFS traversal karta hai.
-    """
-    visited = set()
-    print("DFS Traversal (Recursive):")
-    dfs_recursive_helper(graph, start_node, visited)
-    print("\n")
-
-
-# --- Example Usage ---
+# Example usage
 if __name__ == "__main__":
+    g = Graph()
     
-    # BFS ko run karna
-    bfs(graph, 'A')
+    # Graph mein edges add karo
+    g.add_edge(0, 1)
+    g.add_edge(0, 2)
+    g.add_edge(1, 3)
+    g.add_edge(2, 3)
+    g.add_edge(2, 4)
+    g.add_edge(3, 4)
     
-    # Iterative DFS ko run karna
-    dfs_iterative(graph, 'A')
+    # BFS aur DFS run karo
+    print("BFS Traversal starting from node 0:", g.bfs(0))
+    print("DFS Traversal starting from node 0:", g.dfs(0))
     
-    # Recursive DFS ko run karna
-    dfs_recursive(graph, 'A')
+    # Graph ko visualize karo
+    g.visualize()
