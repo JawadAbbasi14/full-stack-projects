@@ -1,89 +1,76 @@
-Graph Search Algorithms: BFS aur DFS 🔥
-Yeh README graph_search.py (artifact_id: 33bbaee1-da35-4676-882d-8f52dc9876b7) ke liye hai, jahan humne Breadth-First Search (BFS) aur Depth-First Search (DFS) ko Python mein implement kiya hai. Yeh dono algorithms graph traversal ke liye core hain aur mjstore jaise CLI-based ecommerce projects mein bohot kaam aate hain. Chalo, inki working ko elite style mein samajhte hain!
-
-🚀 Yeh Code Kya Hai?
-Yeh code ek undirected graph ko adjacency list ke form mein represent karta hai aur uspe BFS aur DFS chalata hai. Graph ke nodes aur edges ko visualize karne ke liye networkx aur matplotlib use kiya gaya hai, with mjstore ke signature colors: #5b67f3 (nodes), #ff6b6b (edges), aur #333333 (text).
-
-BFS: Level-by-level nodes ko explore karta hai, jaise ke queue mein kaam hota hai.
-DFS: Deeply ek path ko explore karta hai, jaise ke stack ya recursion ke sath.
 
 
-💡 Working Ka Breakdown
-1. Graph Structure
+# 🌐 Graph Search Algorithms: BFS and DFS
 
-Adjacency List: Graph ko defaultdict se banaya gaya hai, jahan har node ke neighbors ek list mein store hote hain.
-Undirected Graph: Agar node A se B tak edge hai, to B se A tak bhi edge add hota hai.
-Example: add_edge(0, 1) se node 0 aur 1 ke beech connection ban jata hai.
+Ye Python script ek **undirected graph** ke liye **Breadth-First Search (BFS)** aur **Depth-First Search (DFS)** algorithms implement karti hai. Saath hi, graph ko visually represent karne ke liye `matplotlib` aur `networkx` ka use kiya gaya hai.
 
-2. BFS Ka Flow
+## 📌 Features
 
-Logic: BFS queue use karta hai (deque) aur starting node se shuru hota hai. Yeh level-wise nodes visit karta hai, pehle close neighbors, phir unke neighbors, aise hi aage.
-Steps:
-Starting node ko queue mein daalo aur visited set mein mark karo.
-Queue se node nikalo, usay traversal list mein add karo.
-Us node ke unvisited neighbors ko queue mein daalo aur mark karo.
-Jab queue khali ho, BFS complete!
+- Graph representation using **adjacency list**
+- **BFS** traversal using queue
+- **DFS** traversal using recursion
+- **Graph visualization** with customizable layout and colors
 
+## 🧠 Algorithms Explained
 
-Output: Ek list jo nodes ka level-order traversal dikhati hai.
+### 🔍 Breadth-First Search (BFS)
+- BFS graph ke nodes ko level-wise explore karta hai.
+- Queue ka use hota hai taake pehle aaye nodes pehle process ho.
+- Har node ke neighbors ko visit karte hain agar wo pehle visit nahi hue.
 
-3. DFS Ka Flow
+### 🧗 Depth-First Search (DFS)
+- DFS graph ko depth mein explore karta hai.
+- Recursion ka use hota hai taake har branch ko pura traverse kare.
+- Har node ke unvisited neighbors pe recursive call hoti hai.
 
-Logic: DFS recursion use karta hai aur ek path ko deeply explore karta hai jab tak dead-end na mile, phir backtrack karta hai.
-Steps:
-Starting node ko visited set mein mark karo aur traversal list mein add karo.
-Us node ke unvisited neighbors ke liye recursive call karo.
-Jab saare paths explore ho jayen, DFS complete!
+## 🧪 Example Usage
 
+```python
+if __name__ == "__main__":
+    g = Graph()
 
-Output: Ek list jo nodes ka depth-first traversal dikhati hai.
+    # Graph ke edges define karo
+    g.add_edge(0, 1)
+    g.add_edge(0, 2)
+    g.add_edge(1, 3)
+    g.add_edge(2, 3)
+    g.add_edge(2, 4)
+    g.add_edge(3, 4)
 
-4. Visualization
+    # Traversals run karo
+    print("BFS Traversal starting from node 0:", g.bfs(0))
+    print("DFS Traversal starting from node 0:", g.dfs(0))
 
-Kaise?: networkx se graph banaya jata hai, aur matplotlib se visually dikhaya jata hai.
-Kyun?: Yeh dekhnay mein help karta hai ke nodes kaise connect hain aur traversal ka order kaisa lagta hai.
-Styling: Nodes blue (#5b67f3), edges warm red (#ff6b6b), aur text dark gray (#333333) mein hain, jo mjstore ke theme se match karta hai.
+    # Graph visualize karo
+    g.visualize()
+```
 
+## 📊 Visualization
 
-🌟 Real-World Mein Kaam
-mjstore Ke Liye
+Graph ko visually represent karne ke liye `networkx` ka `spring_layout` use hota hai. Nodes aur edges ko color aur size ke saath customize kiya gaya hai taake output visually appealing ho.
 
-BFS: Product recommendation system ke liye perfect hai. Jaise, agar ek user ne ek phone khareeda, to BFS se uske similar products (jaise accessories, cases) level-by-level suggest kar sakte hain.
-DFS: Category tree traversal ke liye kaam aata hai. Example: Electronics > Laptops > Gaming Laptops tak deeply navigate karna.
+## 🛠 Requirements
 
-Freelancing Ka Faida
+Install required libraries before running:
 
-BFS aur DFS seekhna bohot valuable hai. Recommendation systems, search functionality, ya social media graphs ke liye yeh skills high-demand mein hain. Freelancers isse $50-$100/hour kama sakte hain, kyunki ecommerce aur social platforms in algorithms ko heavily use karte hain.
+```bash
+pip install matplotlib networkx
+```
 
+## 📁 File Structure
 
-🖼️ Visualization Ka Jadoo
+- `Graph` class: Graph creation and traversal logic
+- `add_edge(u, v)`: Adds undirected edge between nodes `u` and `v`
+- `bfs(start)`: Returns BFS traversal from `start` node
+- `dfs(start)`: Returns DFS traversal from `start` node
+- `visualize()`: Displays the graph using matplotlib
 
-Kyun Use Kiya?: visualize() function graph ko visually dikhata hai, jo debugging aur understanding ke liye game-changer hai.
-Kaise Connect Hota Hai?:
-BFS ke level-order traversal se nodes ke layers clear dikhayi dete hain.
-DFS ke deep paths se complex relationships samajh aate hain.
+## 🎯 Use Cases
 
-
-Debugging Mein Help: Agar traversal order galat lag raha hai, to visualization se connections check kar sakte ho.
-
-
-🛠️ Kaise Run Karna Hai?
-
-Dependencies Install Karo:pip install networkx matplotlib
-
-
-Code Run Karo:python graph_search.py
-
-
-Output Dekho:
-BFS aur DFS ka traversal order terminal pe print hoga.
-Ek graph visualization pop-up karegi, showing nodes aur edges mjstore ke colors mein.
+- Graph theory learning and visualization
+- Algorithm teaching tools
+- Interview preparation for BFS/DFS
+- Educational demos and projects
 
 
 
-
-🚴‍♂️ ROADMAP Connection
-Yeh code Buniyadi phase ka hissa hai, jahan hum graph algorithms ke basics seekh rahe hain. Agla step hoga weighted graphs aur Dijkstra’s algorithm seekhna, jo mjstore mein shortest path finding (jaise delivery routes) ke liye kaam aayega. Har din thodi growth, no shortcuts!
-
-🎯 Pro Tip
-BFS aur DFS ko samajhna sirf coding nahi, problem-solving ka mindset hai. Yeh algorithms seekh ke tum databases, AI/ML, ya fullstack development mein aage nikal jaoge. mjstore ke liye yeh foundation hai aur freelancing ke liye ek solid skillset!
